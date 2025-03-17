@@ -1,19 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:solar/components/custom_elevated_button.dart';
+import 'package:solar/components/custom_email_field.dart';
+import 'package:solar/components/custom_password_field.dart';
+import 'package:solar/components/custom_text_field_controller.dart';
+import 'package:solar/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  bool allowFormSubmission = true;
+
+  RegisterScreen({super.key});
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  bool _passwordVisible = false;
-  bool _confirmPasswordVisible = false;
+  final _formKey = GlobalKey<FormState>();
+
+  final CustomTextFieldController _nameController = CustomTextFieldController();
+  final CustomTextFieldController _emailController =
+      CustomTextFieldController();
+  final CustomTextFieldController _passwordController =
+      CustomTextFieldController();
+  final CustomTextFieldController _confirmPasswordController =
+      CustomTextFieldController();
 
   @override
   void dispose() {
@@ -24,33 +35,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _register() {
+  void _register() async {
+    if (!widget.allowFormSubmission) {
+      return;
+    }
+
+    setState(() {
+      widget.allowFormSubmission = false;
+    });
+
     final name = _nameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    if (name.isEmpty) {
-      _showError('El nombre no puede estar vacío');
-      return;
-    }
-
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      _showError('Introduce un correo electrónico válido');
-      return;
-    }
-
-    if (password.length < 6) {
-      _showError('La contraseña debe tener al menos 6 caracteres');
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (password != confirmPassword) {
-      _showError('Las contraseñas no coinciden');
+      _confirmPasswordController.error =
+          "El texto no coincide con la contraseña anterior";
       return;
     }
 
-    // Proceder con el registro
+    try {
+      final credentials =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        _passwordController.error = "La contraseña es muy débil";
+      } else if (e.code == "email-already-in-use") {
+        _emailController.error = "El correo ingresado ya está en uso";
+      } else {
+        print(e);
+        _showError(e.code);
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    setState(() {
+      widget.allowFormSubmission = true;
+    });
   }
 
   void _showError(String message) {
@@ -65,94 +95,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text("Registro"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              "Crear una nueva cuenta",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: "Nombre",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_passwordVisible,
-              decoration: InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Crear una nueva cuenta",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _passwordVisible = !_passwordVisible;
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: !_confirmPasswordVisible,
-              decoration: InputDecoration(
-                labelText: "Confirmar Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: "Nombre de usuario",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Ingresa un nombre de usuario";
+                      }
+                      return null;
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _confirmPasswordVisible = !_confirmPasswordVisible;
-                    });
-                  },
-                ),
+                  const SizedBox(height: 20),
+                  CustomEmailField(
+                    label: "Correo electrónico",
+                    controller: _emailController,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomPasswordField(
+                    label: "Contraseña",
+                    controller: _passwordController,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomPasswordField(
+                    label: "Confirmar contraseña",
+                    controller: _confirmPasswordController,
+                  ),
+                  const SizedBox(height: 30),
+                  CustomElevatedButton(
+                    label: "Registrarse",
+                    onPressed: widget.allowFormSubmission ? _register : null,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: _register,
-              child: const Text(
-                "Registrar",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

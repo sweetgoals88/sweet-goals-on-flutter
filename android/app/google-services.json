@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "124430569128",
+    "project_id": "solar-sync-mobile",
+    "storage_bucket": "solar-sync-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124430569128:android:12bbad5ae4bf298499bc9d",
+        "android_client_info": {
+          "package_name": "com.example.solar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-AFGxKhBF0zOt8v3C2amRHe2eX-EHlHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
