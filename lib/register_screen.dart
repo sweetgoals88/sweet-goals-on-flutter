@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:solar/components/custom_elevated_button.dart';
-import 'package:solar/components/custom_email_field.dart';
-import 'package:solar/components/custom_password_field.dart';
-import 'package:solar/components/custom_text_field_controller.dart';
-import 'package:solar/home_screen.dart';
+import 'package:prubea1app/components/custom_elevated_button.dart';
+import 'package:prubea1app/components/custom_email_field.dart';
+import 'package:prubea1app/components/custom_password_field.dart';
+import 'package:prubea1app/components/custom_text_field_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:prubea1app/api_interface.dart';
 
 class RegisterScreen extends StatefulWidget {
   bool allowFormSubmission = true;
@@ -36,65 +36,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _register() async {
-    if (!widget.allowFormSubmission) {
-      return;
-    }
-
-    setState(() {
-      widget.allowFormSubmission = false;
-    });
-
-    final name = _nameController.text;
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (password != confirmPassword) {
-      _confirmPasswordController.error =
-          "El texto no coincide con la contraseña anterior";
-      return;
-    }
-
-    try {
-      final credentials =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        _passwordController.error = "La contraseña es muy débil";
-      } else if (e.code == "email-already-in-use") {
-        _emailController.error = "El correo ingresado ya está en uso";
-      } else {
-        print(e);
-        _showError(e.code);
-      }
-    } catch (e) {
-      print(e);
-    }
-
-    setState(() {
-      widget.allowFormSubmission = true;
-    });
+    // Método deshabilitado temporalmente
+    _showError("La funcionalidad de registro está deshabilitada por ahora.");
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Registro"),
-      ),
+      appBar: AppBar(title: const Text("Registro")),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(

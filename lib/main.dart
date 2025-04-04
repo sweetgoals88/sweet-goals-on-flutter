@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:solar/home_screen.dart';
-import 'package:solar/login_screen.dart';
-import 'package:solar/register_screen.dart';
-
-import 'firebase_options.dart';
-import 'app_state.dart';
+import 'package:prubea1app/home_screen.dart';
+import 'api_interface.dart';
+import 'login_screen.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'control_variables.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ApplicationState(),
-      builder: ((context, child) => MainApp()),
-    ),
-  );
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -30,11 +22,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Solar Sync",
-      home: Consumer<ApplicationState>(
-        builder: (context, appState, _) {
-          return appState.loggedIn ? HomeScreen() : LoginScreen();
-        },
-      ),
+      home: LoginScreen()
     );
   }
 }

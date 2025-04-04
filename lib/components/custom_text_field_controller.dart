@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFieldController extends TextEditingController {
+  CustomTextFieldController({super.text});
+
   final ValueNotifier<String?> errorNotifier = ValueNotifier(null);
 
   String? get error {

@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:solar/app_state.dart';
+import 'package:prubea1app/api_interface.dart';
+import 'package:prubea1app/main.dart';
+import 'package:prubea1app/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,34 +17,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildScreen(int index) {
     switch (index) {
-      case 0:
-        return const Center(
-          child: Text(
-            'Análisis de Producción',
-            style: TextStyle(fontSize: 30, color: Colors.black),
-          ),
-        );
-      case 1:
-        return const Center(
-          child: Text(
-            'Dashboard',
-            style: TextStyle(fontSize: 30, color: Colors.black),
-          ),
-        );
-      case 2:
-        return const Center(
-          child: Text(
-            'Alerta',
-            style: TextStyle(fontSize: 30, color: Colors.black),
-          ),
-        );
-      case 3:
-        return const Center(
-          child: Text(
-            'Acciones Correctivas',
-            style: TextStyle(fontSize: 30, color: Colors.black),
-          ),
-        );
+      case 0: // Análisis de Producción
+        return const Center(child: Text("Análisis de Producción"));
+      case 1: // Dashboard
+        return const Center(child: Text("Dashboard"));
+      case 2: // Alertas
+        return const Center(child: Text("Alertas"));
+      case 3: // Acciones Correctivas
+        return const Center(child: Text("Acciones Correctivas"));
       case 4:
         return _buildProfileScreen();
       default:
@@ -63,8 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 20),
         ElevatedButton.icon(
           onPressed: () async {
-            await Provider.of<ApplicationState>(context, listen: false)
-                .logout();
+            await ApiInterface.logout();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
           },
           icon: const Icon(Icons.logout),
           label: const Text("Cerrar sesión"),
@@ -78,17 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
     'Dashboard',
     'Alerta',
     'Acciones Correctivas',
-    'Perfil'
+    'Perfil',
   ];
 
   final colors = [
-    Colors.tealAccent
-        .withValues(alpha: 0.3), // Color para Análisis de Producción
-    Colors.greenAccent.withValues(alpha: 0.3), // Color para Dashboard
-    Colors.orangeAccent.withValues(alpha: 0.3), // Color para Alerta
-    Colors.lightBlueAccent
-        .withValues(alpha: 0.3), // Color para Acciones Correctivas
-    Colors.orangeAccent.withValues(alpha: 0.3)
+    Colors.tealAccent.withAlpha(76), // Color para Análisis de Producción
+    Colors.greenAccent.withAlpha(76), // Color para Dashboard
+    Colors.orangeAccent.withAlpha(76), // Color para Alerta
+    Colors.lightBlueAccent.withAlpha(76), // Color para Acciones Correctivas
+    Colors.orangeAccent.withAlpha(76), // Color para Perfil
   ];
 
   @override
@@ -99,13 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: colors[_currentIndex],
       ),
-      body: ListView(
-        children: [
-          Container(
-            color: Colors.white, // Fondo blanco
-            child: _buildScreen(_currentIndex),
-          )
-        ],
+      body: Container(
+        color: Colors.white, // Fondo blanco
+        child: _buildScreen(
+          _currentIndex,
+        ), // Asegúrate de que este método esté funcionando correctamente
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -114,33 +93,21 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: colors[_currentIndex],
           color: Colors.black,
           activeColor: Colors.black,
-          tabBackgroundColor: Colors.white.withValues(alpha: 0.3),
-          selectedIndex: _currentIndex,
+          tabBackgroundColor: Colors.white.withAlpha(76),
+          selectedIndex:
+              _currentIndex, // Asegúrate de que este valor coincida con el índice actual
           onTabChange: (index) {
-            setState(() => _currentIndex = index);
+            setState(
+              () => _currentIndex = index,
+            ); // Actualiza el estado correctamente
           },
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           tabs: const [
-            GButton(
-              icon: Icons.analytics,
-              iconActiveColor: Colors.black,
-            ),
-            GButton(
-              icon: Icons.dashboard,
-              iconActiveColor: Colors.black,
-            ),
-            GButton(
-              icon: Icons.warning,
-              iconActiveColor: Colors.black,
-            ),
-            GButton(
-              icon: Icons.build,
-              iconActiveColor: Colors.black,
-            ),
-            GButton(
-              icon: Icons.person,
-              iconActiveColor: Colors.black,
-            ),
+            GButton(icon: Icons.analytics, iconActiveColor: Colors.black),
+            GButton(icon: Icons.dashboard, iconActiveColor: Colors.black),
+            GButton(icon: Icons.warning, iconActiveColor: Colors.black),
+            GButton(icon: Icons.build, iconActiveColor: Colors.black),
+            GButton(icon: Icons.person, iconActiveColor: Colors.black),
           ],
         ),
       ),

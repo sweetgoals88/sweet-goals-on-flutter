@@ -1,6 +1,6 @@
 {
-    "name": "solar",
-    "short_name": "solar",
+    "name": "prubea1app",
+    "short_name": "prubea1app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

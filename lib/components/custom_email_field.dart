@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar/components/custom_text_field_controller.dart';
+import 'package:prubea1app/components/custom_text_field_controller.dart';
 
 class CustomEmailField extends StatelessWidget {
   CustomTextFieldController controller;
@@ -31,7 +31,8 @@ class CustomEmailField extends StatelessWidget {
   }
 
   String? _validate() {
-    final error = validator?.call(controller.text) ??
+    final error =
+        validator?.call(controller.text) ??
         CustomEmailField.defaultValidator(controller.text);
     controller.error = error;
     return error;
@@ -41,18 +42,19 @@ class CustomEmailField extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String?>(
       valueListenable: controller.errorNotifier,
-      builder: (context, errorText, child) => TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          errorText: errorText,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+      builder:
+          (context, errorText, child) => TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: label,
+              errorText: errorText,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onChanged: (_) => _finalValidator(controller.text),
+            validator: (value) => _finalValidator(value),
           ),
-        ),
-        onChanged: (_) => _finalValidator(controller.text),
-        validator: (value) => _finalValidator(value),
-      ),
     );
   }
 }
