@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar/components/custom_text_field_controller.dart';
+import 'package:prubea1app/components/custom_text_field_controller.dart';
 
 class CustomPasswordField extends StatefulWidget {
   final String label;
@@ -30,7 +30,8 @@ class _CustomPasswordFieldState extends State<CustomPasswordField> {
   bool _passwordVisible = false;
 
   String? _finalValidator(String? value) {
-    final error = widget.validator?.call(value) ??
+    final error =
+        widget.validator?.call(value) ??
         CustomPasswordField.defaultValidator(value);
     widget.controller.error = error;
     return error;
@@ -47,9 +48,7 @@ class _CustomPasswordFieldState extends State<CustomPasswordField> {
           decoration: InputDecoration(
             labelText: widget.label,
             errorText: errorText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             suffixIcon: IconButton(
               icon: Icon(
                 _passwordVisible ? Icons.visibility : Icons.visibility_off,

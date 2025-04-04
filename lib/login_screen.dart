@@ -1,15 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:solar/app_state.dart';
-import 'package:solar/components/custom_elevated_button.dart';
-import 'package:solar/components/custom_email_field.dart';
-import 'package:solar/components/custom_password_field.dart';
-import 'package:solar/components/custom_text_button.dart';
-import 'package:solar/components/custom_text_field_controller.dart';
-import 'package:solar/home_screen.dart';
-import 'package:solar/main.dart';
-import 'package:solar/register_screen.dart';
+import 'package:prubea1app/api_interface.dart';
+import 'package:prubea1app/components/custom_elevated_button.dart';
+import 'package:prubea1app/components/custom_email_field.dart';
+import 'package:prubea1app/components/custom_password_field.dart';
+import 'package:prubea1app/components/custom_text_button.dart';
+import 'package:prubea1app/components/custom_text_field_controller.dart';
+import 'package:prubea1app/home_screen.dart';
+import 'package:prubea1app/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,31 +33,24 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Attempt to sign in
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        final response = await ApiInterface.login(
+          _emailController.text.trim(), 
+          _passwordController.text.trim()
         );
-
-        // Notify the app state that user is logged in
-        Provider.of<ApplicationState>(context, listen: false).init();
-
-        // Navigate to HomeScreen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } on FirebaseAuthException catch (e) {
-        String errorMessage = "Error al iniciar sesión.";
-        if (e.code == 'user-not-found') {
-          errorMessage = "No se encontró un usuario con este correo.";
-        } else if (e.code == 'wrong-password') {
-          errorMessage = "Contraseña incorrecta.";
+        if (response.statusCode == 200) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error del servidor: ${response.data}")),
+          );
         }
-
-        // Display error message
+      } catch (e) {
+        // Mostrar mensaje de error
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
+          SnackBar(content: Text("Error al iniciar sesión: ${e.toString()}")),
         );
       }
     }
