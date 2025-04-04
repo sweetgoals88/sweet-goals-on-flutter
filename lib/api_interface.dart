@@ -1,32 +1,35 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 
-import 'package:http/http.dart' as dio;
 import 'package:prubea1app/control_variables.dart';
 import 'package:prubea1app/db/api_call.dart';
+import 'package:prubea1app/db/api_response_models/user_dashboard.dart';
 
-class ApiInterface {
-  static Future<Response<dynamic>> login(String email, String password) async {
-    try {
-      APICall apiCall = APICall();
-      final response = await apiCall.client.post(
-        '$API_ENDPOINT/user/login',
-        data: jsonEncode({'email': email, 'password': password}),
-      );
-      print('Respuesta de autenticación: ${response.data}');
-      return response;
-    } catch (e) {
-      print('Error en la autenticación: $e');
-      throw e;
-    }
-  }
+Future<Response<dynamic>> login(String email, String password) async {
+  APICall apiCall = APICall();
+  Response<dynamic> response = await apiCall.client.post(
+    '$API_ENDPOINT/user/login',
+    data: jsonEncode({'email': email, 'password': password}),
+  );
+  return response;
+}
 
-  static Future<Response<dynamic>> logout() async {
-    APICall apiCall = APICall();
-    final response = await apiCall.client.post(
-      '$API_ENDPOINT/user/logout',
-    );
-    return response;
+Future<Response<dynamic>> logout() async {
+  APICall apiCall = APICall();
+  final response = await apiCall.client.post('$API_ENDPOINT/user/logout');
+  return response;
+}
+
+Future<dynamic> getUserDashboard() async {
+  APICall apiCall = APICall();
+  final response = await apiCall.client.post(
+    '$API_ENDPOINT/user/get-dashboard-data',
+  );
+  final responseData = jsonDecode(response.data);
+  if (responseData["type"] == "customer") {
+    return CustomerDashboardPayload.fromJson(responseData);
   }
+  return AdminDashboardPayload.fromJson(responseData);
+
+  // {"id":"yIloyvvIETdf06ZhWz0d","name":"Ulises Eduardo","surname":"López Acosta","email":"eduardola.ti23@utsjr.edu.mx","type":"customer","notifications":[],"oldestNotification":null,"prototypes":[{"id":"BTSSmx22yKDgC1a9yAIQ","operational":true,"version_id":"IZ3mEGXP1dOb8Xyr94O8","user_customization":{"icon":"default","label":"default","latitude":0,"longitude":0},"panel_specifications":{},"internalReadings":[],"externalReadings":[],"oldestInternalReading":null,"oldestExternalReading":null}]}
 }
