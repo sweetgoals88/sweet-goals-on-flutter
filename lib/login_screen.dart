@@ -1,12 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:prubea1app/api_interface.dart';
+import 'package:go_router/go_router.dart';
+import 'package:prubea1app/api_interface.dart' as api;
 import 'package:prubea1app/components/custom_elevated_button.dart';
 import 'package:prubea1app/components/custom_email_field.dart';
 import 'package:prubea1app/components/custom_password_field.dart';
 import 'package:prubea1app/components/custom_text_button.dart';
 import 'package:prubea1app/components/custom_text_field_controller.dart';
-import 'package:prubea1app/home_screen.dart';
 import 'package:prubea1app/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,10 +18,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final CustomTextFieldController _emailController =
-      CustomTextFieldController();
+  final CustomTextFieldController _emailController = CustomTextFieldController(
+    text: "eduardola.ti23@utsjr.edu.mx",
+  );
   final CustomTextFieldController _passwordController =
-      CustomTextFieldController();
+      CustomTextFieldController(text: "AriDiosa");
 
   @override
   void dispose() {
@@ -33,24 +34,21 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final response = await ApiInterface.login(
-          _emailController.text.trim(), 
-          _passwordController.text.trim()
+        await api.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
-        if (response.statusCode == 200) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error del servidor: ${response.data}")),
-          );
-        }
-      } catch (e) {
-        // Mostrar mensaje de error
+
+        if (!mounted) return;
+        context.go("/dashboard");
+      } on DioException catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error al iniciar sesión: ${e.toString()}")),
+          SnackBar(
+            content: Text(
+              "Error al iniciar sesión: ${e.response?.data["message"]}",
+            ),
+          ),
         );
       }
     }

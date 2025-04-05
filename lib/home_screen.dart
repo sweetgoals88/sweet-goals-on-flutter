@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:prubea1app/api_interface.dart';
+import 'package:prubea1app/api_interface.dart' as api;
 import 'package:prubea1app/main.dart';
 import 'package:prubea1app/login_screen.dart';
 
@@ -43,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 20),
         ElevatedButton.icon(
           onPressed: () async {
-            await ApiInterface.logout();
+            await api.logout();
+            if (!mounted) return;
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),
