@@ -1,12 +1,10 @@
-import 'dart:ffi';
-
 import 'package:prubea1app/db/models/external_reading.dart';
 import 'package:prubea1app/db/models/internal_reading.dart';
 
 class PanelSpecifications {
   final int numberOfPanels;
   final int peakVoltage;
-  final int temperatureRate;
+  final double temperatureRate;
 
   PanelSpecifications({
     required this.numberOfPanels,
@@ -128,9 +126,9 @@ class PrototypePreview {
   final PanelSpecifications panelSpecifications;
   final UserCustomization userCustomization;
   final List<InternalReading> internalReadings;
-  final String oldestInternalReading;
+  final String? oldestInternalReading;
   final List<ExternalReading> externalReadings;
-  final String oldestExternalReading;
+  final String? oldestExternalReading;
 
   PrototypePreview({
     required this.id,

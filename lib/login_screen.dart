@@ -18,10 +18,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final CustomTextFieldController _emailController =
-      CustomTextFieldController();
+  final CustomTextFieldController _emailController = CustomTextFieldController(
+    text: "eduardola.ti23@utsjr.edu.mx",
+  );
   final CustomTextFieldController _passwordController =
-      CustomTextFieldController();
+      CustomTextFieldController(text: "AriDiosa");
 
   @override
   void dispose() {

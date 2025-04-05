@@ -11,7 +11,7 @@ class CustomerDashboardPayload {
   final String email;
   final String type;
   final List<NotificationPreview> notifications;
-  final String oldestNotification;
+  final String? oldestNotification;
   final List<PrototypePreview> prototypes;
 
   CustomerDashboardPayload({

@@ -14,7 +14,7 @@ class ProfileFragment extends StatelessWidget {
             try {
               await api.logout();
               if (!context.mounted) return;
-              context.go("/");
+              context.go("/login");
             } catch (e) {
               if (!context.mounted) return;
               ScaffoldMessenger.of(

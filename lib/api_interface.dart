@@ -25,11 +25,11 @@ Future<dynamic> getUserDashboard() async {
   final response = await apiCall.client.post(
     '$API_ENDPOINT/user/get-dashboard-data',
   );
-  final responseData = jsonDecode(response.data);
-  if (responseData["type"] == "customer") {
-    return CustomerDashboardPayload.fromJson(responseData);
+
+  if (response.data["type"] == "customer") {
+    return CustomerDashboardPayload.fromJson(response.data);
   }
-  return AdminDashboardPayload.fromJson(responseData);
+  return AdminDashboardPayload.fromJson(response.data);
 
   // {"id":"yIloyvvIETdf06ZhWz0d","name":"Ulises Eduardo","surname":"López Acosta","email":"eduardola.ti23@utsjr.edu.mx","type":"customer","notifications":[],"oldestNotification":null,"prototypes":[{"id":"BTSSmx22yKDgC1a9yAIQ","operational":true,"version_id":"IZ3mEGXP1dOb8Xyr94O8","user_customization":{"icon":"default","label":"default","latitude":0,"longitude":0},"panel_specifications":{},"internalReadings":[],"externalReadings":[],"oldestInternalReading":null,"oldestExternalReading":null}]}
 }

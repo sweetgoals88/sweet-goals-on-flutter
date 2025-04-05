@@ -61,6 +61,9 @@ class _AppShellState extends State<AppShell> {
                   horizontal: 20,
                   vertical: 20,
                 ),
+                onTabChange: (index) {
+                  widget.statefulNavigationShell.goBranch(index);
+                },
                 tabs: const [
                   GButton(icon: Icons.dashboard, iconActiveColor: Colors.black),
                   GButton(

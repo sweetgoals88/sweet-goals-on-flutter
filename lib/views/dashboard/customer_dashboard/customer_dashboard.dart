@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +26,10 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    print("Here in the customer dashboard");
     final provider = Provider.of<DashboardDataProvider>(context);
-    final prototypes = provider.data?.prototypes ?? [];
+    final data = provider.asCustomer();
+    final prototypes = data.prototypes;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -44,7 +44,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                 prototypes.map((proto) {
                   return DropdownMenuItem(
                     value: proto,
-                    child: Text(proto.user_customization.label),
+                    child: Text(proto.userCustomization.label),
                   );
                 }).toList(),
             onChanged: (proto) {
