@@ -33,7 +33,7 @@ class ExternalReading {
       voltage: (json['voltage'] as num).toDouble(),
       wattage: (json['wattage'] as num).toDouble(),
       panelSpecifications: PanelSpecifications.fromJson(
-        json['panel_specifications'],
+        json['panelSpecifications'],
       ),
     );
   }
@@ -47,7 +47,7 @@ class ExternalReading {
       'current': current,
       'voltage': voltage,
       'wattage': wattage,
-      'panel_specifications': panelSpecifications.toJson(),
+      'panelSpecifications': panelSpecifications.toJson(),
     };
   }
 }

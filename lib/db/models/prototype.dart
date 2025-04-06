@@ -96,9 +96,9 @@ class Prototype {
       externalReadings: List.from(json['internal_readings']),
       internalReadings: List.from(json['internal_readings']),
       versionId: json['version_id'],
-      userCustomization: UserCustomization.fromJson(json['user_customization']),
+      userCustomization: UserCustomization.fromJson(json['userCustomization']),
       panelSpecifications: PanelSpecifications.fromJson(
-        json['panel_specifications'],
+        json['panelSpecifications'],
       ),
     );
   }
@@ -113,8 +113,8 @@ class Prototype {
       'external_readings': externalReadings,
       'internal_readings': internalReadings,
       'version_id': versionId,
-      'user_customization': userCustomization.toJson(),
-      'panel_specifications': panelSpecifications.toJson(),
+      'userCustomization': userCustomization.toJson(),
+      'panelSpecifications': panelSpecifications.toJson(),
     };
   }
 }
@@ -148,9 +148,9 @@ class PrototypePreview {
       operational: json['operational'],
       versionId: json['version_id'],
       panelSpecifications: PanelSpecifications.fromJson(
-        json['panel_specifications'],
+        json['panelSpecifications'],
       ),
-      userCustomization: UserCustomization.fromJson(json['user_customization']),
+      userCustomization: UserCustomization.fromJson(json['userCustomization']),
       internalReadings:
           (json['internalReadings'] as List)
               .map((e) => InternalReading.fromJson(e))
@@ -169,8 +169,8 @@ class PrototypePreview {
       'id': id,
       'operational': operational,
       'version_id': versionId,
-      'panel_specifications': panelSpecifications.toJson(),
-      'user_customization': userCustomization.toJson(),
+      'panelSpecifications': panelSpecifications.toJson(),
+      'userCustomization': userCustomization.toJson(),
       'internalReadings': internalReadings.map((e) => e.toJson()).toList(),
       'oldestInternalReading': oldestInternalReading,
       'externalReadings': externalReadings.map((e) => e.toJson()).toList(),
