@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:prubea1app/control_variables.dart';
 import 'package:prubea1app/db/api_call.dart';
-import 'package:prubea1app/db/api_response_models/user_dashboard.dart';
+import 'package:prubea1app/db/models/user.dart';
 
 Future<Response<dynamic>> login(String email, String password) async {
   APICall apiCall = APICall();
@@ -27,9 +27,8 @@ Future<dynamic> getUserDashboard() async {
   );
 
   if (response.data["type"] == "customer") {
-    return CustomerDashboardPayload.fromJson(response.data);
+    print(response.data);
+    return CustomerPreview.fromJson(response.data);
   }
-  return AdminDashboardPayload.fromJson(response.data);
-
-  // {"id":"yIloyvvIETdf06ZhWz0d","name":"Ulises Eduardo","surname":"López Acosta","email":"eduardola.ti23@utsjr.edu.mx","type":"customer","notifications":[],"oldestNotification":null,"prototypes":[{"id":"BTSSmx22yKDgC1a9yAIQ","operational":true,"version_id":"IZ3mEGXP1dOb8Xyr94O8","user_customization":{"icon":"default","label":"default","latitude":0,"longitude":0},"panel_specifications":{},"internalReadings":[],"externalReadings":[],"oldestInternalReading":null,"oldestExternalReading":null}]}
+  return AdminPreview.fromJson(response.data);
 }

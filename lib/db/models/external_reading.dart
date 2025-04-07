@@ -1,8 +1,6 @@
-import 'dart:ffi';
-
 import 'package:prubea1app/db/models/prototype.dart';
 
-class ExternalReading {
+class ExternalReadingPreview {
   final String id;
   final DateTime dateTime;
   final double light;
@@ -10,9 +8,9 @@ class ExternalReading {
   final double current;
   final double voltage;
   final double wattage;
-  final PanelSpecifications panelSpecifications;
+  final PanelSpecificationsPreview panelSpecifications;
 
-  ExternalReading({
+  ExternalReadingPreview({
     required this.id,
     required this.dateTime,
     required this.light,
@@ -23,8 +21,8 @@ class ExternalReading {
     required this.panelSpecifications,
   });
 
-  factory ExternalReading.fromJson(Map<String, dynamic> json) {
-    return ExternalReading(
+  factory ExternalReadingPreview.fromJson(Map<String, dynamic> json) {
+    return ExternalReadingPreview(
       id: json['id'],
       dateTime: DateTime.parse(json['dateTime']),
       light: (json['light'] as num).toDouble(),
@@ -32,22 +30,9 @@ class ExternalReading {
       current: (json['current'] as num).toDouble(),
       voltage: (json['voltage'] as num).toDouble(),
       wattage: (json['wattage'] as num).toDouble(),
-      panelSpecifications: PanelSpecifications.fromJson(
+      panelSpecifications: PanelSpecificationsPreview.fromJson(
         json['panelSpecifications'],
       ),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'dateTime': dateTime.toIso8601String(),
-      'light': light,
-      'temperature': temperature,
-      'current': current,
-      'voltage': voltage,
-      'wattage': wattage,
-      'panelSpecifications': panelSpecifications.toJson(),
-    };
   }
 }

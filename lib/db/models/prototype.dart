@@ -1,121 +1,49 @@
 import 'package:prubea1app/db/models/external_reading.dart';
 import 'package:prubea1app/db/models/internal_reading.dart';
 
-class PanelSpecifications {
+class PanelSpecificationsPreview {
   final int numberOfPanels;
   final int peakVoltage;
   final double temperatureRate;
 
-  PanelSpecifications({
+  PanelSpecificationsPreview({
     required this.numberOfPanels,
     required this.peakVoltage,
     required this.temperatureRate,
   });
 
-  factory PanelSpecifications.fromJson(Map<String, dynamic> json) {
-    return PanelSpecifications(
-      numberOfPanels: json['number_of_panels'],
-      peakVoltage: json['peak_voltage'],
-      temperatureRate: json['temperature_rate'],
+  factory PanelSpecificationsPreview.fromJson(Map<String, dynamic> json) {
+    return PanelSpecificationsPreview(
+      numberOfPanels: json['numberOfPanels'],
+      peakVoltage: json['peakVoltage'],
+      temperatureRate: json['temperatureRate'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'number_of_panels': numberOfPanels,
-      'peak_voltage': peakVoltage,
-      'temperature_rate': temperatureRate,
-    };
   }
 }
 
-class UserCustomization {
+class UserCustomizationPreview {
   final double latitude;
   final double longitude;
+  final String locationName;
   final String label;
   final String icon;
 
-  UserCustomization({
+  UserCustomizationPreview({
     required this.latitude,
     required this.longitude,
+    required this.locationName,
     required this.label,
     required this.icon,
   });
 
-  factory UserCustomization.fromJson(Map<String, dynamic> json) {
-    return UserCustomization(
+  factory UserCustomizationPreview.fromJson(Map<String, dynamic> json) {
+    return UserCustomizationPreview(
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      locationName: json['locationName'],
       label: json['label'],
       icon: json['icon'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'latitude': latitude,
-      'longitude': longitude,
-      'label': label,
-      'icon': icon,
-    };
-  }
-}
-
-class Prototype {
-  final String id;
-  final String key;
-  final bool active;
-  final bool operational;
-  final String activationCode;
-  final List<String> externalReadings;
-  final List<String> internalReadings;
-  final String versionId;
-  final UserCustomization userCustomization;
-  final PanelSpecifications panelSpecifications;
-
-  Prototype({
-    required this.id,
-    required this.key,
-    required this.active,
-    required this.operational,
-    required this.activationCode,
-    required this.externalReadings,
-    required this.internalReadings,
-    required this.versionId,
-    required this.userCustomization,
-    required this.panelSpecifications,
-  });
-
-  factory Prototype.fromJson(Map<String, dynamic> json) {
-    return Prototype(
-      id: json['id'],
-      key: json['key'],
-      active: json['active'],
-      operational: json['operational'],
-      activationCode: json['activation_code'],
-      externalReadings: List.from(json['internal_readings']),
-      internalReadings: List.from(json['internal_readings']),
-      versionId: json['version_id'],
-      userCustomization: UserCustomization.fromJson(json['userCustomization']),
-      panelSpecifications: PanelSpecifications.fromJson(
-        json['panelSpecifications'],
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'key': key,
-      'active': active,
-      'operational': operational,
-      'activation_code': activationCode,
-      'external_readings': externalReadings,
-      'internal_readings': internalReadings,
-      'version_id': versionId,
-      'userCustomization': userCustomization.toJson(),
-      'panelSpecifications': panelSpecifications.toJson(),
-    };
   }
 }
 
@@ -123,11 +51,11 @@ class PrototypePreview {
   final String id;
   final bool operational;
   final String versionId;
-  final PanelSpecifications panelSpecifications;
-  final UserCustomization userCustomization;
-  final List<InternalReading> internalReadings;
+  final UserCustomizationPreview userCustomization;
+  final PanelSpecificationsPreview panelSpecifications;
+  final List<InternalReadingPreview> internalReadings;
+  final List<ExternalReadingPreview> externalReadings;
   final String? oldestInternalReading;
-  final List<ExternalReading> externalReadings;
   final String? oldestExternalReading;
 
   PrototypePreview({
@@ -143,38 +71,40 @@ class PrototypePreview {
   });
 
   factory PrototypePreview.fromJson(Map<String, dynamic> json) {
-    return PrototypePreview(
-      id: json['id'],
-      operational: json['operational'],
-      versionId: json['version_id'],
-      panelSpecifications: PanelSpecifications.fromJson(
-        json['panelSpecifications'],
-      ),
-      userCustomization: UserCustomization.fromJson(json['userCustomization']),
-      internalReadings:
-          (json['internalReadings'] as List)
-              .map((e) => InternalReading.fromJson(e))
-              .toList(),
-      oldestInternalReading: json['oldestInternalReading'],
-      externalReadings:
-          (json['externalReadings'] as List)
-              .map((e) => ExternalReading.fromJson(e))
-              .toList(),
-      oldestExternalReading: json['oldestExternalReading'],
+    final id = json['id'];
+    final operational = json['operational'] ?? false;
+    final versionId = json['versionId'];
+    final panelSpecifications = PanelSpecificationsPreview.fromJson(
+      json['panelSpecifications'],
     );
-  }
+    final userCustomization = UserCustomizationPreview.fromJson(
+      json['userCustomization'],
+    );
+    final internalReadings =
+        (json['internalReadings'] != null
+                ? json['internalReadings'] as List
+                : List.empty())
+            .map((e) => InternalReadingPreview.fromJson(e))
+            .toList();
+    final oldestInternalReading = json['oldestInternalReading'];
+    final externalReadings =
+        (json['externalReadings'] != null
+                ? json['externalReadings'] as List
+                : List.empty())
+            .map((e) => ExternalReadingPreview.fromJson(e))
+            .toList();
+    final oldestExternalReading = json['oldestExternalReading'];
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'operational': operational,
-      'version_id': versionId,
-      'panelSpecifications': panelSpecifications.toJson(),
-      'userCustomization': userCustomization.toJson(),
-      'internalReadings': internalReadings.map((e) => e.toJson()).toList(),
-      'oldestInternalReading': oldestInternalReading,
-      'externalReadings': externalReadings.map((e) => e.toJson()).toList(),
-      'oldestExternalReading': oldestExternalReading,
-    };
+    return PrototypePreview(
+      id: id,
+      operational: operational,
+      versionId: versionId,
+      panelSpecifications: panelSpecifications,
+      userCustomization: userCustomization,
+      internalReadings: internalReadings,
+      oldestInternalReading: oldestInternalReading,
+      externalReadings: externalReadings,
+      oldestExternalReading: oldestExternalReading,
+    );
   }
 }

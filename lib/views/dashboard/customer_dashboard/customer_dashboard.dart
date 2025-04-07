@@ -26,7 +26,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    print("Here in the customer dashboard");
     final provider = Provider.of<DashboardDataProvider>(context);
     final data = provider.asCustomer();
     final prototypes = data.prototypes;

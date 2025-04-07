@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:prubea1app/db/api_response_models/user_dashboard.dart';
+import 'package:prubea1app/db/models/user.dart';
 
 class DashboardDataProvider extends ChangeNotifier {
   final dynamic data;
@@ -10,19 +10,19 @@ class DashboardDataProvider extends ChangeNotifier {
   DashboardDataProvider({required this.data});
 
   bool isCustomerData() {
-    return data is CustomerDashboardPayload;
+    return data is CustomerPreview;
   }
 
   bool isAdminData() {
-    return data is AdminDashboardPayload;
+    return data is AdminPreview;
   }
 
-  CustomerDashboardPayload asCustomer() {
-    return data as CustomerDashboardPayload;
+  CustomerPreview asCustomer() {
+    return data as CustomerPreview;
   }
 
-  AdminDashboardPayload asAdmin() {
-    return data as AdminDashboardPayload;
+  AdminPreview asAdmin() {
+    return data as AdminPreview;
   }
 
   void _startFetching() {
