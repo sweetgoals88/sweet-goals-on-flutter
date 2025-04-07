@@ -30,7 +30,18 @@ class _AppShellState extends State<AppShell> {
       future: _userDashboardPayload,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Column(
+              children: [
+                Text(
+                  "Conectando con la base de datos",
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text("Esto puede tomar un momento"),
+                CircularProgressIndicator(),
+              ],
+            ),
+          );
         }
 
         if (snapshot.hasError) {

@@ -24,74 +24,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<DashboardDataProvider>(context);
-    final data = provider.asCustomer();
-    final prototypes = data.prototypes;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Dropdown
-          DropdownButton<PrototypePreview>(
-            value: selectedPrototype,
-            isExpanded: true,
-            items:
-                prototypes.map((proto) {
-                  return DropdownMenuItem(
-                    value: proto,
-                    child: Text(proto.userCustomization.label),
-                  );
-                }).toList(),
-            onChanged: (proto) {
-              setState(() => selectedPrototype = proto);
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Panel Specifications
-          if (selectedPrototype != null) ...[
-            Text(
-              "Panel Specs: ${selectedPrototype!.panelSpecifications.numberOfPanels} panels, "
-              "${selectedPrototype!.panelSpecifications.peakVoltage}V peak, "
-              "Temp rate: ${selectedPrototype!.panelSpecifications.temperatureRate}",
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "User Location: (${selectedPrototype!.userCustomization.latitude}, "
-              "${selectedPrototype!.userCustomization.longitude})",
-            ),
-            const SizedBox(height: 24),
-
-            // External Readings Chart
-            Text(
-              "External Readings",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(
-              height: 200,
-              child: _buildExternalChart(selectedPrototype!),
-            ),
-            const SizedBox(height: 24),
-
-            // Internal Readings Chart
-            Text(
-              "Internal Readings",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(
-              height: 200,
-              child: _buildInternalChart(selectedPrototype!),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildExternalChart(PrototypePreview prototype) {
     final data = prototype.externalReadings;
 
@@ -101,24 +33,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               (e) => FlSpot(
                 e.dateTime.millisecondsSinceEpoch.toDouble(),
                 e.current,
-              ),
-            )
-            .toList();
-    final spotsVoltage =
-        data
-            .map(
-              (e) => FlSpot(
-                e.dateTime.millisecondsSinceEpoch.toDouble(),
-                e.voltage,
-              ),
-            )
-            .toList();
-    final spotsWattage =
-        data
-            .map(
-              (e) => FlSpot(
-                e.dateTime.millisecondsSinceEpoch.toDouble(),
-                e.wattage,
               ),
             )
             .toList();
@@ -133,18 +47,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             isCurved: true,
             dotData: FlDotData(show: false),
           ),
-          LineChartBarData(
-            spots: spotsVoltage,
-            color: Colors.red,
-            isCurved: true,
-            dotData: FlDotData(show: false),
-          ),
-          LineChartBarData(
-            spots: spotsWattage,
-            color: Colors.green,
-            isCurved: true,
-            dotData: FlDotData(show: false),
-          ),
+          // Otros datos como voltage y wattage
         ],
       ),
     );
@@ -162,15 +65,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               ),
             )
             .toList();
-    final spotsTemperature =
-        data
-            .map(
-              (e) => FlSpot(
-                e.dateTime.millisecondsSinceEpoch.toDouble(),
-                e.temperature,
-              ),
-            )
-            .toList();
 
     return LineChart(
       LineChartData(
@@ -182,14 +76,81 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             isCurved: true,
             dotData: FlDotData(show: false),
           ),
-          LineChartBarData(
-            spots: spotsTemperature,
-            color: Colors.orange,
-            isCurved: true,
-            dotData: FlDotData(show: false),
-          ),
+          // Otros datos como temperature
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ...existing code...
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ...existing code...
+
+          // External Readings Chart
+          Text(
+            "External Readings",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          SizedBox(height: 200, child: _buildExternalChart(selectedPrototype!)),
+          const SizedBox(height: 8),
+          _buildExternalChartLegend(), // Leyenda para el gráfico externo
+          const SizedBox(height: 24),
+
+          // Internal Readings Chart
+          Text(
+            "Internal Readings",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          SizedBox(height: 200, child: _buildInternalChart(selectedPrototype!)),
+          const SizedBox(height: 8),
+          _buildInternalChartLegend(), // Leyenda para el gráfico interno
+        ],
+      ),
+    );
+  }
+
+  // Leyenda para el gráfico externo
+  Widget _buildExternalChartLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildLegendItem(Colors.blue, "Corriente"),
+        _buildLegendItem(Colors.red, "Voltaje"),
+        _buildLegendItem(Colors.green, "Potencia"),
+      ],
+    );
+  }
+
+  // Leyenda para el gráfico interno
+  Widget _buildInternalChartLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildLegendItem(Colors.purple, "Humedad"),
+        _buildLegendItem(Colors.orange, "Temperatura"),
+      ],
+    );
+  }
+
+  // Widget reutilizable para un ítem de la leyenda
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(label),
+      ],
     );
   }
 }
