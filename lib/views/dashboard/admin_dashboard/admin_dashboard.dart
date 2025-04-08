@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prubea1app/api_interface.dart';
+import 'package:prubea1app/api/api_interface.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -17,13 +17,6 @@ class AdminDashboard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              await logout();
-            },
-            child: const Text('Log Out'),
           ),
         ],
       ),

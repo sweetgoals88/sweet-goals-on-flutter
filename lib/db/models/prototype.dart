@@ -74,12 +74,14 @@ class PrototypePreview {
     final id = json['id'];
     final operational = json['operational'] ?? false;
     final versionId = json['versionId'];
+    print("After version id");
     final panelSpecifications = PanelSpecificationsPreview.fromJson(
       json['panelSpecifications'],
     );
     final userCustomization = UserCustomizationPreview.fromJson(
       json['userCustomization'],
     );
+    print("After user customization");
     final internalReadings =
         (json['internalReadings'] != null
                 ? json['internalReadings'] as List

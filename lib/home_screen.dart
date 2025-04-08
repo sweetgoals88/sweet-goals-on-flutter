@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:prubea1app/api_interface.dart' as api;
+import 'package:prubea1app/api/api_interface.dart' as api;
 import 'package:prubea1app/main.dart';
 import 'package:prubea1app/login_screen.dart';
 

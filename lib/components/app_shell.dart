@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:prubea1app/api_interface.dart' as api;
+import 'package:prubea1app/api/api_interface.dart' as api;
 import 'package:prubea1app/views/dashboard/dashboard_data_provider.dart';
 import 'package:prubea1app/components/loading_state.dart';
 

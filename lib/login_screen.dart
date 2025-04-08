@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prubea1app/api_interface.dart' as api;
+import 'package:prubea1app/api/api_interface.dart' as api;
 import 'package:prubea1app/components/custom_elevated_button.dart';
 import 'package:prubea1app/components/custom_email_field.dart';
 import 'package:prubea1app/components/custom_password_field.dart';
@@ -19,10 +19,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final CustomTextFieldController _emailController = CustomTextFieldController(
-    text: "eduardola.ti23@utsjr.edu.mx",
+    text: "edgar.avila.rro@gmail.com",
   );
   final CustomTextFieldController _passwordController =
-      CustomTextFieldController(text: "AriDiosa");
+      CustomTextFieldController(text: "123456");
   bool isLoading = false;
 
   @override
