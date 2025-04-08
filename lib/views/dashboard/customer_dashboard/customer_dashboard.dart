@@ -18,46 +18,100 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final provider = Provider.of<DashboardDataProvider>(context);
-    if (selectedPrototype == null &&
-        provider.data?.prototypes.isNotEmpty == true) {
-      selectedPrototype = provider.data!.prototypes.first;
+    final customerData = provider.asCustomer();
+
+    if (selectedPrototype == null && customerData.prototypes.isNotEmpty) {
+      selectedPrototype = customerData.prototypes.first;
     }
   }
 
-  Widget _buildExternalChart(PrototypePreview prototype) {
-    final data = prototype.externalReadings;
+  Widget _buildDropdown(List<PrototypePreview> prototypes) {
+    return DropdownButton<PrototypePreview>(
+      value: selectedPrototype,
+      onChanged: (PrototypePreview? newValue) {
+        setState(() {
+          selectedPrototype = newValue;
+        });
+      },
+      items:
+          prototypes.map<DropdownMenuItem<PrototypePreview>>((prototype) {
+            return DropdownMenuItem<PrototypePreview>(
+              value: prototype,
+              child: Text(prototype.userCustomization.label),
+            );
+          }).toList(),
+    );
+  }
 
-    final spotsCurrent =
-        data
+  Widget _buildLineChart(
+    List<FlSpot> spots,
+    String title,
+    String unit,
+    Color color,
+    double minY,
+    double maxY,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("$title ($unit)", style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 200,
+          child: LineChart(
+            LineChartData(
+              minY: minY,
+              maxY: maxY,
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: true),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: true),
+                ),
+              ),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  color: color,
+                  isCurved: true,
+                  dotData: FlDotData(show: false),
+                ),
+              ],
+              borderData: FlBorderData(show: true),
+              gridData: FlGridData(show: true),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<DashboardDataProvider>(context);
+    final customerData = provider.asCustomer();
+
+    if (selectedPrototype == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final internalData = selectedPrototype!.internalReadings;
+    final externalData = selectedPrototype!.externalReadings;
+
+    final spotsTemperature =
+        internalData
             .map(
               (e) => FlSpot(
                 e.dateTime.millisecondsSinceEpoch.toDouble(),
-                e.current,
+                e.temperature,
               ),
             )
             .toList();
 
-    return LineChart(
-      LineChartData(
-        titlesData: FlTitlesData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spotsCurrent,
-            color: Colors.blue,
-            isCurved: true,
-            dotData: FlDotData(show: false),
-          ),
-          // Otros datos como voltage y wattage
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInternalChart(PrototypePreview prototype) {
-    final data = prototype.internalReadings;
-
     final spotsHumidity =
-        data
+        internalData
             .map(
               (e) => FlSpot(
                 e.dateTime.millisecondsSinceEpoch.toDouble(),
@@ -66,91 +120,74 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             )
             .toList();
 
-    return LineChart(
-      LineChartData(
-        titlesData: FlTitlesData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spotsHumidity,
-            color: Colors.purple,
-            isCurved: true,
-            dotData: FlDotData(show: false),
-          ),
-          // Otros datos como temperature
-        ],
-      ),
-    );
-  }
+    final spotsCurrent =
+        externalData
+            .map(
+              (e) => FlSpot(
+                e.dateTime.millisecondsSinceEpoch.toDouble(),
+                e.current,
+              ),
+            )
+            .toList();
 
-  @override
-  Widget build(BuildContext context) {
-    // ...existing code...
+    final spotsVoltage =
+        externalData
+            .map(
+              (e) => FlSpot(
+                e.dateTime.millisecondsSinceEpoch.toDouble(),
+                e.voltage,
+              ),
+            )
+            .toList();
+
+    final spotsPower =
+        externalData
+            .map(
+              (e) => FlSpot(
+                e.dateTime.millisecondsSinceEpoch.toDouble(),
+                e.wattage,
+              ),
+            )
+            .toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ...existing code...
-
-          // External Readings Chart
-          Text(
-            "External Readings",
-            style: Theme.of(context).textTheme.titleMedium,
+          const Text(
+            "Seleccionar prototipo",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 200, child: _buildExternalChart(selectedPrototype!)),
           const SizedBox(height: 8),
-          _buildExternalChartLegend(), // Leyenda para el gráfico externo
-          const SizedBox(height: 24),
-
-          // Internal Readings Chart
+          _buildDropdown(customerData.prototypes),
+          const SizedBox(height: 16),
           Text(
-            "Internal Readings",
-            style: Theme.of(context).textTheme.titleMedium,
+            "Ubicación: ${selectedPrototype!.userCustomization.locationName}",
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
-          SizedBox(height: 200, child: _buildInternalChart(selectedPrototype!)),
           const SizedBox(height: 8),
-          _buildInternalChartLegend(), // Leyenda para el gráfico interno
+          Text(
+            "Especificaciones: ${selectedPrototype!.panelSpecifications.numberOfPanels} paneles, "
+            "Voltaje pico: ${selectedPrototype!.panelSpecifications.peakVoltage}V, "
+            "Tasa de temperatura: ${selectedPrototype!.panelSpecifications.temperatureRate}°C",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 16),
+          _buildLineChart(
+            spotsTemperature,
+            "Temperatura",
+            "°C",
+            Colors.orange,
+            -10,
+            40,
+          ),
+          _buildLineChart(spotsHumidity, "Humedad", "%", Colors.blue, 0, 100),
+          _buildLineChart(spotsCurrent, "Corriente", "A", Colors.green, 0, 100),
+          _buildLineChart(spotsVoltage, "Voltaje", "V", Colors.red, 0, 150),
+          _buildLineChart(spotsPower, "Potencia", "W", Colors.purple, 0, 1000),
         ],
       ),
-    );
-  }
-
-  // Leyenda para el gráfico externo
-  Widget _buildExternalChartLegend() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildLegendItem(Colors.blue, "Corriente"),
-        _buildLegendItem(Colors.red, "Voltaje"),
-        _buildLegendItem(Colors.green, "Potencia"),
-      ],
-    );
-  }
-
-  // Leyenda para el gráfico interno
-  Widget _buildInternalChartLegend() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildLegendItem(Colors.purple, "Humedad"),
-        _buildLegendItem(Colors.orange, "Temperatura"),
-      ],
-    );
-  }
-
-  // Widget reutilizable para un ítem de la leyenda
-  Widget _buildLegendItem(Color color, String label) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 4),
-        Text(label),
-      ],
     );
   }
 }

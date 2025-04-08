@@ -27,7 +27,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
   void initState() {
     super.initState();
     final provider = Provider.of<DashboardDataProvider>(context, listen: false);
-    final data = provider.asCustomer();
+    final data = provider.asUser();
     _nameController.text = data.name;
     _surnameController.text = data.surname;
     _emailController.text = data.email;

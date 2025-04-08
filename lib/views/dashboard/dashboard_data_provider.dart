@@ -25,6 +25,14 @@ class DashboardDataProvider extends ChangeNotifier {
     return data as AdminPreview;
   }
 
+  UserPreview asUser() {
+    if (isCustomerData()) {
+      return UserPreview.fromCustomer(asCustomer());
+    } else {
+      return UserPreview.fromAdmin(asAdmin());
+    }
+  }
+
   void _startFetching() {
     //
   }
