@@ -51,16 +51,27 @@ class _ProfileFragmentState extends State<ProfileFragment> {
       });
 
       try {
+        final newName = _nameController.text.trim();
+        final newSurname = _surnameController.text.trim();
+        final newEmail =
+            _emailController.text.trim() == _originalEmail
+                ? ""
+                : _emailController.text.trim();
+
         await api.updateUserProfile(
-          name: _nameController.text.trim(),
-          surname: _surnameController.text.trim(),
-          email:
-              _emailController.text.trim() == _originalEmail
-                  ? ""
-                  : _emailController.text.trim(),
+          name: newName,
+          surname: newSurname,
+          email: newEmail,
           newPassword: _newPasswordController.text.trim(),
           oldPassword: _previousPasswordController.text.trim(),
         );
+
+        if (!mounted) return;
+        final provider = Provider.of<DashboardDataProvider>(
+          context,
+          listen: false,
+        );
+        provider.setUser(newName, newSurname, newEmail);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Perfil actualizado correctamente")),
         );

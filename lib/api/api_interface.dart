@@ -6,6 +6,8 @@ import 'dart:convert';
 
 import 'package:prubea1app/control_variables.dart';
 import 'package:prubea1app/db/location_option.dart';
+import 'package:prubea1app/db/models/external_reading.dart';
+import 'package:prubea1app/db/models/internal_reading.dart';
 import 'package:prubea1app/db/models/user.dart';
 
 Future<Response<dynamic>> login(String email, String password) async {
@@ -111,6 +113,56 @@ Future<void> updateUserProfile({
         "newPassword": newPassword,
         "oldPassword": oldPassword,
       },
+    );
+  } catch (e) {
+    throw Exception("Error al actualizar el perfil: $e");
+  }
+}
+
+Future<
+  ({
+    List<ExternalReadingPreview> externalReadings,
+    List<InternalReadingPreview> internalReadings,
+    String? nextLastExternalReading,
+    String? nextLastInternalReading,
+  })
+>
+getLastReadings({
+  required String? lastInternalReading,
+  required String? lastExternalReading,
+  required String prototypeId,
+}) async {
+  APICall apiCall = APICall();
+  try {
+    final response = await apiCall.client.post(
+      "$API_ENDPOINT/prototype/get-last-readings",
+      data: {
+        "prototypeId": prototypeId,
+        "lastInternalReading": lastInternalReading,
+        "lastExternalReading": lastExternalReading,
+      },
+    );
+    return (
+      externalReadings:
+          (response.data["externalReadings"] != null
+                  ? response.data["externalReadings"] as List
+                  : List.empty())
+              .map((e) => ExternalReadingPreview.fromJson(e))
+              .toList(),
+      internalReadings:
+          (response.data["internalReadings"] != null
+                  ? response.data["internalReadings"] as List
+                  : List.empty())
+              .map((e) => InternalReadingPreview.fromJson(e))
+              .toList(),
+      nextLastExternalReading:
+          response.data["nextLastExternalReading"] == null
+              ? null
+              : response.data["nextLastExternalReading"] as String,
+      nextLastInternalReading:
+          response.data["nextLastInternalReading"] == null
+              ? null
+              : response.data["nextLastInternalReading"] as String,
     );
   } catch (e) {
     throw Exception("Error al actualizar el perfil: $e");

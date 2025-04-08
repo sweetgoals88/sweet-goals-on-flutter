@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,11 +20,24 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   late Future<dynamic> _userDashboardPayload;
+  Timer? _fetchTimer;
 
   @override
   void initState() {
     super.initState();
     _userDashboardPayload = api.getUserDashboard();
+  }
+
+  void _startFetchingPrototypeReadings(DashboardDataProvider provider) {
+    _fetchTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      provider.fetchPrototypeReadings();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fetchTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -44,9 +59,13 @@ class _AppShellState extends State<AppShell> {
         }
 
         return ChangeNotifierProvider(
-          create: (_) => DashboardDataProvider(data: snapshot.data),
+          create: (_) {
+            final provider = DashboardDataProvider(data: snapshot.data);
+            _startFetchingPrototypeReadings(provider);
+            return provider;
+          },
           child: Scaffold(
-            appBar: AppBar(title: Text("Solar Sync"), centerTitle: true),
+            appBar: AppBar(title: const Text("Solar Sync"), centerTitle: true),
             body: Container(
               color: Colors.white,
               child: widget.statefulNavigationShell,
