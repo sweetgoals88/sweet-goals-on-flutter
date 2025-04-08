@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   );
   final CustomTextFieldController _passwordController =
       CustomTextFieldController(text: "AriDiosa");
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -33,6 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
       try {
         await api.login(
           _emailController.text.trim(),
@@ -50,6 +55,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     }
   }
@@ -105,10 +116,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                         ),
                         const SizedBox(height: 30),
-                        CustomElevatedButton(
-                          label: "Iniciar sesión",
-                          onPressed: _login,
-                        ),
+                        isLoading
+                            ? const CircularProgressIndicator()
+                            : CustomElevatedButton(
+                              label: "Iniciar sesión",
+                              onPressed: _login,
+                            ),
                         const SizedBox(height: 20),
                         CustomTextButton(
                           onPressed: () {

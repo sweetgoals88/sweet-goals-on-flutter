@@ -5,6 +5,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:prubea1app/api_interface.dart' as api;
 import 'package:prubea1app/views/dashboard/dashboard_data_provider.dart';
+import 'package:prubea1app/components/loading_state.dart';
 
 class AppShell extends StatefulWidget {
   StatefulNavigationShell statefulNavigationShell;
@@ -30,18 +31,7 @@ class _AppShellState extends State<AppShell> {
       future: _userDashboardPayload,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Column(
-              children: [
-                Text(
-                  "Conectando con la base de datos",
-                  style: TextStyle(color: Colors.white),
-                ),
-                Text("Esto puede tomar un momento"),
-                CircularProgressIndicator(),
-              ],
-            ),
-          );
+          return const LoadingState();
         }
 
         if (snapshot.hasError) {
