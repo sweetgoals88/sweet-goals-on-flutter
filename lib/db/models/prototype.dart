@@ -3,7 +3,7 @@ import 'package:prubea1app/db/models/internal_reading.dart';
 
 class PanelSpecificationsPreview {
   final int numberOfPanels;
-  final int peakVoltage;
+  final double peakVoltage;
   final double temperatureRate;
 
   PanelSpecificationsPreview({

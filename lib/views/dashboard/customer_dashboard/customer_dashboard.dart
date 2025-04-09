@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
@@ -43,14 +45,16 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     );
   }
 
-  Widget _buildLineChart(
-    List<FlSpot> spots,
-    String title,
-    String unit,
-    Color color,
-    double minY,
-    double maxY,
-  ) {
+  Widget _buildLineChart({
+    required List<FlSpot> spots,
+    required String title,
+    required String unit,
+    required Color color,
+    required double minY,
+    required double maxY,
+    required double maxX,
+    required double minX,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,6 +64,8 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           height: 200,
           child: LineChart(
             LineChartData(
+              minX: minX,
+              maxX: maxX,
               minY: minY,
               maxY: maxY,
               titlesData: FlTitlesData(
@@ -74,13 +80,14 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                 LineChartBarData(
                   spots: spots,
                   color: color,
-                  isCurved: true,
+                  isCurved: false,
                   dotData: FlDotData(show: false),
                 ),
               ],
               borderData: FlBorderData(show: true),
               gridData: FlGridData(show: true),
             ),
+            curve: Curves.linear,
           ),
         ),
         const SizedBox(height: 16),
@@ -98,7 +105,45 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     }
 
     final internalData = selectedPrototype!.internalReadings;
+    internalData.sort(
+      (a, b) =>
+          (a.dateTime.millisecondsSinceEpoch.toDouble() -
+                  b.dateTime.millisecondsSinceEpoch.toDouble())
+              .toInt(),
+    );
+
     final externalData = selectedPrototype!.externalReadings;
+    externalData.sort(
+      (a, b) =>
+          (a.dateTime.millisecondsSinceEpoch.toDouble() -
+                  b.dateTime.millisecondsSinceEpoch.toDouble())
+              .toInt(),
+    );
+
+    final internalDataTimestamps = internalData.map(
+      (e) => e.dateTime.millisecondsSinceEpoch.toDouble(),
+    );
+    final externalDataTimestamps = externalData.map(
+      (e) => e.dateTime.millisecondsSinceEpoch.toDouble(),
+    );
+
+    final minInternalTimestamp =
+        internalDataTimestamps.isNotEmpty
+            ? internalDataTimestamps.reduce(min)
+            : 0.0;
+    final maxInternalTimestamp =
+        internalDataTimestamps.isNotEmpty
+            ? internalDataTimestamps.reduce(max)
+            : 100.0;
+
+    final minExternalTimestamp =
+        externalDataTimestamps.isNotEmpty
+            ? externalDataTimestamps.reduce(min)
+            : 0.0;
+    final maxExternalTimestamp =
+        externalDataTimestamps.isNotEmpty
+            ? externalDataTimestamps.reduce(max)
+            : 100.0;
 
     final spotsTemperature =
         internalData
@@ -175,17 +220,55 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           ),
           const SizedBox(height: 16),
           _buildLineChart(
-            spotsTemperature,
-            "Temperatura",
-            "°C",
-            Colors.orange,
-            -10,
-            40,
+            spots: spotsTemperature,
+            title: "Temperatura",
+            unit: "°C",
+            color: Colors.orange,
+            minY: -10,
+            maxY: 40,
+            minX: minInternalTimestamp,
+            maxX: maxInternalTimestamp,
           ),
-          _buildLineChart(spotsHumidity, "Humedad", "%", Colors.blue, 0, 100),
-          _buildLineChart(spotsCurrent, "Corriente", "A", Colors.green, 0, 100),
-          _buildLineChart(spotsVoltage, "Voltaje", "V", Colors.red, 0, 150),
-          _buildLineChart(spotsPower, "Potencia", "W", Colors.purple, 0, 1000),
+          _buildLineChart(
+            spots: spotsHumidity,
+            title: "Humedad",
+            unit: "%",
+            color: Colors.blue,
+            minY: 0,
+            maxY: 100,
+            minX: minInternalTimestamp,
+            maxX: maxInternalTimestamp,
+          ),
+          _buildLineChart(
+            spots: spotsCurrent,
+            title: "Corriente",
+            unit: "A",
+            color: Colors.green,
+            minY: 0,
+            maxY: 100,
+            minX: minExternalTimestamp,
+            maxX: maxExternalTimestamp,
+          ),
+          _buildLineChart(
+            spots: spotsVoltage,
+            title: "Voltaje",
+            unit: "V",
+            color: Colors.red,
+            minY: -100,
+            maxY: 150,
+            minX: minExternalTimestamp,
+            maxX: maxExternalTimestamp,
+          ),
+          _buildLineChart(
+            spots: spotsPower,
+            title: "Potencia",
+            unit: "W",
+            color: Colors.purple,
+            minY: -3000,
+            maxY: 1000,
+            minX: minExternalTimestamp,
+            maxX: maxExternalTimestamp,
+          ),
         ],
       ),
     );
